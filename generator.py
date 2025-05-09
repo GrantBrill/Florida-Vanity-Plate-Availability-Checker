@@ -6,6 +6,9 @@ import os
 from config import numoflets  
 from config import include_numbers
 
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+print(numoflets)
 list1 = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 
 if include_numbers:
@@ -18,7 +21,7 @@ perm_list = [''.join(p) for p in permutations(list1, numoflets)]
 
 combinedlist.extend(perm_list)
 
-file_path = 'Florida License Plate Project/plates.json'
+file_path = 'plates.json'
 
 if os.stat(file_path).st_size == 0:
     oldlist = []
@@ -36,4 +39,4 @@ with open(file_path, 'w') as file:
 
 time.sleep(1)
 
-subprocess.run(["python", "Florida License Plate Project/inputfunction.py"])
+subprocess.run(["python", "inputfunction.py"])

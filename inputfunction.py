@@ -1,16 +1,24 @@
 import time
+import json
+import os
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
-import json
+from selenium.webdriver.chrome.service import Service
 
-with open('Florida License Plate Project/plates.json', 'r') as file:
+from webdriver_manager.chrome import ChromeDriverManager
+
+# ensure working directory is script directory
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+with open('plates.json', 'r') as file:
     plates = json.load(file)
 
-with open('Florida License Plate Project/works.json', 'w') as worker:
+# initialize works.json
+with open('works.json', 'w') as worker:
     json.dump([], worker)
-with open('Florida License Plate Project/works.json', 'r') as worker:
+with open('works.json', 'r') as worker:
     works = json.load(worker)
 
 numdic = {
@@ -23,7 +31,7 @@ numdic = {
 
 def webcheck(plates_subset, driver):
     def perrow(row, plate):
-        rownum = driver.find_element(By.ID, "MainContent_txtInputRow" + numdic[row])
+        rownum = driver.find_element(By.ID, f"MainContent_txtInputRow{numdic[row]}")
         rownum.send_keys(plate)
 
     driver.get("https://services.flhsmv.gov/mvcheckpersonalplate/")
@@ -37,23 +45,27 @@ def webcheck(plates_subset, driver):
     time.sleep(1)
 
     for row in range(1, len(plates_subset) + 1):
-        if row <= 2:
-            rowresults = driver.find_element(By.ID, "MainContent_lblOutPutRow" + numdic[row])
-        else:
-            rowresults = driver.find_element(By.ID, "MainContent_lblOutputRow" + numdic[row])
+        # note the output ID typo fix for rows 3–5
+        out_id = (
+            f"MainContent_lblOutPutRow{numdic[row]}"
+            if row <= 2
+            else f"MainContent_lblOutputRow{numdic[row]}"
+        )
+        rowresults = driver.find_element(By.ID, out_id)
 
-        print(plates_subset[row - 1]) 
-        print(rowresults.text)
-
+        print(plates_subset[row - 1], rowresults.text)
         if rowresults.text == "AVAILABLE":
             works.append(plates_subset[row - 1])
 
+# configure headless Chrome
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--no-sandbox")
 
-driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
+# use Service to avoid __init__() multiple-values error
+service = Service(ChromeDriverManager().install())
+driver = webdriver.Chrome(service=service, options=chrome_options)
 
 numofentries = len(plates)
 print(f"We will check this many plates: {numofentries}")
@@ -62,7 +74,7 @@ for i in range(0, numofentries, 5):
     plates_subset = plates[i:i + 5]
     webcheck(plates_subset, driver)
 
-with open('Florida License Plate Project/works.json', 'w') as worker:
+with open('works.json', 'w') as worker:
     json.dump(works, worker, indent=4)
 
 driver.quit()
