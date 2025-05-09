@@ -35,7 +35,9 @@ else:
 oldlist[:] = combinedlist
 
 with open(file_path, 'w') as file:
-    json.dump(oldlist, file) 
+    json.dump(list(set(oldlist)), file) 
+
+
 
 time.sleep(1)
 
