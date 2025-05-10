@@ -5,3 +5,21 @@ This is a project to check the availability of short license plate letter and nu
 
 
 
+# Setup
+
+### Install dependencies:
+run ` pip install selenium
+ `
+
+# Configuration
+edit ` config.py ` with your prefered options
+
+# Usage
+run `generator.py`
+
+After some time available plates will be listed in ` works.json `
+
+
+
+
+
