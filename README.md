@@ -12,7 +12,7 @@ Do not use this tool without permission from the Florida Department of Motor Veh
 run ` pip install selenium
  `
 
-# Configuration
+### Configure
 edit ` config.py ` with your prefered options
 
 # Usage
